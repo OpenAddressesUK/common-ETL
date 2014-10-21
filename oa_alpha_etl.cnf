@@ -1,0 +1,7 @@
+# Open Addresses ETL Database Configuration Settings
+# Amend as required
+[database]
+hostname=localhost
+database=oa_alpha_etl
+username=oa_alpha_etl
+password = ***************
