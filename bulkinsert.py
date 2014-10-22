@@ -5,7 +5,7 @@
 #
 # Version       1.0 (Python) in progress
 # Author        John Murray
-# Licence       CC By SA
+# Licence       MIT
 #
 # Purpose       Bulk insert items into a MySQl or MariaDB table
 #
