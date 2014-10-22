@@ -5,7 +5,7 @@
 #
 # Version       1.0 (Python) in progress
 # Author        John Murray
-# Licence       CC By SA
+# Licence       MIT
 #
 # Purpose       Parse, validate and format full and partial UK postcodes
 #
