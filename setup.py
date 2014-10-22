@@ -7,7 +7,7 @@ here = path.abspath(path.dirname(__file__))
 setup(
     name='common_etl',
 
-    version='0.0.1',
+    version='0.0.2',
 
     description='A sample Python project',
 
