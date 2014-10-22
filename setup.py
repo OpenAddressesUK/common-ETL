@@ -5,7 +5,7 @@ from os import path
 here = path.abspath(path.dirname(__file__))
 
 setup(
-    name='common-ETL',
+    name='common_etl',
 
     version='0.0.1',
 
