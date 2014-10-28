@@ -3,8 +3,8 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Oct 21, 2014 at 04:53 PM
--- Server version: 5.5.39-MariaDB-1~wheezy
+-- Generation Time: Oct 28, 2014 at 11:48 AM
+-- Server version: 5.5.40-MariaDB-1~wheezy
 -- PHP Version: 5.4.4-14+deb7u14
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -23,6 +23,29 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `ONSPD`
+--
+
+CREATE TABLE IF NOT EXISTS `ONSPD` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `pcds` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `usertype` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `EA` int(11) DEFAULT NULL,
+  `NO` int(11) DEFAULT NULL,
+  `osgrdind` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ctry` char(1) COLLATE utf8_unicode_ci NOT NULL,
+  `current` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `pcds` (`pcds`),
+  KEY `NO` (`NO`),
+  KEY `EA` (`EA`),
+  KEY `ctry` (`ctry`),
+  KEY `Current` (`current`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `ONSPD_Changes`
 --
 
@@ -33,49 +56,7 @@ CREATE TABLE IF NOT EXISTS `ONSPD_Changes` (
   PRIMARY KEY (`ID`),
   UNIQUE KEY `TermPCS` (`TermPCS`),
   KEY `CurrPCS` (`CurrPCS`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `ONSPD_Curr`
---
-
-CREATE TABLE IF NOT EXISTS `ONSPD_Curr` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `pcds` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `usertype` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `EA` int(11) DEFAULT NULL,
-  `NO` int(11) DEFAULT NULL,
-  `osgrdind` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `ctry` char(1) COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`ID`),
-  UNIQUE KEY `pcds` (`pcds`),
-  KEY `NO` (`NO`),
-  KEY `EA` (`EA`),
-  KEY `ctry` (`ctry`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `ONSPD_Term`
---
-
-CREATE TABLE IF NOT EXISTS `ONSPD_Term` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `pcds` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `usertype` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `EA` int(11) DEFAULT NULL,
-  `NO` int(11) DEFAULT NULL,
-  `osgrdind` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `ctry` char(1) COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`ID`),
-  UNIQUE KEY `pcds` (`pcds`),
-  KEY `EA` (`EA`),
-  KEY `NO` (`NO`),
-  KEY `ctry` (`ctry`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -101,8 +82,30 @@ CREATE TABLE IF NOT EXISTS `OS_Locator` (
   `Tile_25k` varchar(4) COLLATE utf8_unicode_ci NOT NULL,
   `Source` varchar(60) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`ID`),
-  KEY `Name` (`Name`,`Classification`,`Minx`,`Maxx`,`Miny`,`Maxy`,`Settlement`,`Locality`,`Cou_Unit`,`Local Authority`,`Tile_10k`,`Tile_25k`,`Centx`,`Centy`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  KEY `Name` (`Name`),
+  KEY `Centx` (`Centx`),
+  KEY `Centy` (`Centy`),
+  KEY `Minx` (`Minx`),
+  KEY `Maxx` (`Maxx`),
+  KEY `Miny` (`Miny`),
+  KEY `Maxy` (`Maxy`),
+  KEY `Locality` (`Locality`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=867836 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `Street_Types`
+--
+
+CREATE TABLE IF NOT EXISTS `Street_Types` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `Street` varchar(60) COLLATE utf8_unicode_ci NOT NULL,
+  `Count` int(11) NOT NULL,
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `Street` (`Street`),
+  KEY `Count` (`Count`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=651 ;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
