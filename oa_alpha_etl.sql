@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Oct 28, 2014 at 11:48 AM
+-- Generation Time: Oct 28, 2014 at 02:30 PM
 -- Server version: 5.5.40-MariaDB-1~wheezy
 -- PHP Version: 5.4.4-14+deb7u14
 
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS `ONSPD` (
   KEY `EA` (`EA`),
   KEY `ctry` (`ctry`),
   KEY `Current` (`current`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=2561456 ;
 
 -- --------------------------------------------------------
 
@@ -51,12 +51,12 @@ CREATE TABLE IF NOT EXISTS `ONSPD` (
 
 CREATE TABLE IF NOT EXISTS `ONSPD_Changes` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `CurrPCS` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `TermPCS` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `curr_pcds` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `term_pcds` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`ID`),
-  UNIQUE KEY `TermPCS` (`TermPCS`),
-  KEY `CurrPCS` (`CurrPCS`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+  UNIQUE KEY `term_pcds` (`term_pcds`),
+  KEY `curr_pcds` (`curr_pcds`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=128166 ;
 
 -- --------------------------------------------------------
 
