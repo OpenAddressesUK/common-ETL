@@ -1,10 +1,23 @@
 # Open Addresses ETL Database Configuration Settings
 # Amend as required
+# ETL Database login details
 [database]
 hostname=localhost
 database=oa_alpha_etl
 username=oa_alpha_etl
 password = ***************
+# API details
 [api]
 url=http://shrouded-caverns-1022.herokuapp.com/address
 token=fe6d43aedebea9fb1597eac31d94406e
+# Sources - create one subsection per source
+[sources]
+sources=companies_house,land_registry
+[companies_house]
+url=http://download.companieshouse.gov.uk/en_output.html
+filestart=basic
+filetype=zip
+[land_registry]
+url=https://www.gov.uk/government/statistical-data-sets/price-paid-data-downloads
+filestart=pp-monthly
+filetype=csv
