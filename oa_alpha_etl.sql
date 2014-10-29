@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Oct 29, 2014 at 12:47 PM
+-- Generation Time: Oct 29, 2014 at 04:25 PM
 -- Server version: 5.5.40-MariaDB-1~wheezy
 -- PHP Version: 5.4.4-14+deb7u14
 
@@ -19,6 +19,21 @@ SET time_zone = "+00:00";
 --
 -- Database: `oa_alpha_etl`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `Files`
+--
+
+CREATE TABLE IF NOT EXISTS `Files` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `fileurl` varchar(1024) COLLATE utf8_unicode_ci NOT NULL,
+  `size` varchar(80) COLLATE utf8_unicode_ci NOT NULL,
+  `modtime` varchar(138) COLLATE utf8_unicode_ci NOT NULL,
+  `lastdownload` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=6 ;
 
 -- --------------------------------------------------------
 
