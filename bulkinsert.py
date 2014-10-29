@@ -53,7 +53,9 @@ class BulkInsert:
             for j in range(0,len(self.fields)):
                 if j > 0:
                     query += ", "
-                if self.values[i][j] == "NULL":
+                if isinstance(self.values[i][j], (int, long, float, complex)):  # Is numeric
+                    query += "'" + str(self.values[i][j]) + "'"                
+                elif self.values[i][j] == "NULL":
                     query += "NULL"
                 elif self.values[i][j][0:12] == "GeomFromText":
                     query += self.values[i][j]
