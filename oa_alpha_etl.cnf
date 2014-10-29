@@ -5,3 +5,6 @@ hostname=localhost
 database=oa_alpha_etl
 username=oa_alpha_etl
 password = ***************
+[api]
+url=http://shrouded-caverns-1022.herokuapp.com/address
+token=fe6d43aedebea9fb1597eac31d94406e
