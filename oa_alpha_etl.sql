@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Oct 28, 2014 at 02:30 PM
+-- Generation Time: Oct 29, 2014 at 12:47 PM
 -- Server version: 5.5.40-MariaDB-1~wheezy
 -- PHP Version: 5.4.4-14+deb7u14
 
@@ -91,6 +91,32 @@ CREATE TABLE IF NOT EXISTS `OS_Locator` (
   KEY `Maxy` (`Maxy`),
   KEY `Locality` (`Locality`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=867836 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `Settlements`
+--
+
+CREATE TABLE IF NOT EXISTS `Settlements` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `OS_Code` int(11) NOT NULL,
+  `Type` char(1) COLLATE utf8_unicode_ci NOT NULL,
+  `Name` varchar(60) COLLATE utf8_unicode_ci NOT NULL,
+  `Cym_Name` varchar(60) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `Admin` varchar(60) COLLATE utf8_unicode_ci NOT NULL,
+  `Cym_Admin` varchar(60) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `Easting` int(11) NOT NULL,
+  `Northing` int(11) NOT NULL,
+  PRIMARY KEY (`ID`),
+  KEY `Type` (`Type`),
+  KEY `Name` (`Name`),
+  KEY `Cym_Name` (`Cym_Name`),
+  KEY `Admin` (`Admin`),
+  KEY `Cym_Admin` (`Cym_Admin`),
+  KEY `Easting` (`Easting`),
+  KEY `Northing` (`Northing`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=25430 ;
 
 -- --------------------------------------------------------
 
