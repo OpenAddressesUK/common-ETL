@@ -36,9 +36,11 @@ fields = ["Name", "Classification", "Centx", "Centy", "Minx", "Maxx", "Miny", "M
 
 bi = BulkInsert(cur,"OS_Locator",fields)
 
+nrecs = 0
+
 for file in glob.glob("OS*.txt"):
     print file
-    nrecs = 0
+
     csvfile = open(file, 'rb')
     reader = csv.reader(csvfile, delimiter=':', quoting=csv.QUOTE_NONE)
     
