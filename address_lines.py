@@ -18,7 +18,7 @@ import collections
 
 class AddressLines:
 
-    def __init__(self, towns='OA_Posttowns.csv'):        # Instantiation - takes list of strings as address argument
+    def __init__(self, cur):            # Instantiation - takes database connection
         self.address = []               # Initialise address list to empty
         self.pcarea = ''                # Initialise postcode area to null string
         self.lines = 0                  # Initialise number of elements to 0
@@ -27,20 +27,20 @@ class AddressLines:
         self.townpos = [-1, -1, -1]     # Position of town in address [line, subline, word]
         self.aons = []                  # Position of addressable objects within the address
         self.elements = collections.OrderedDict()   # Formatted address elements
-        with open(towns, 'rb') as csvfile:
-            townreader = csv.DictReader(csvfile)
-            nrecs = 0
-            for row in townreader:
-                words = [w.translate(None,string.punctuation) for w in re.split(' |-',row['Posttown'])]
-                key = words[0][:4]
-                if row['Area'] not in self.towns:
-                    self.towns[row['Area']] = {}
-                if key not in self.towns[row['Area']]:
-                    self.towns[row['Area']][key] = []
-                self.towns[row['Area']][key].append([row['Posttown'],words])
-                nrecs += 1
-        # print "Records read: " + str(nrecs)
-        # pprint(self.towns)
+        query = "SELECT `pcarea`, `town` FROM `Posttowns`;"
+        cur.execute(query)
+        nrecs = 0
+        for row in cur.fetchall() :
+            words = [w.translate(None,string.punctuation) for w in re.split(' |-',row[1])]
+            key = words[0][:4]
+            if row[0] not in self.towns:
+                self.towns[row[0]] = {}
+            if key not in self.towns[row[0]]:
+                self.towns[row[0]][key] = []
+            self.towns[row[0]][key].append([row[1],words])
+            nrecs += 1
+        print "Records read: " + str(nrecs)
+        pprint(self.towns)
         
     def setAddress(self, address, pcarea):
         # self.address = address
