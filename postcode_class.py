@@ -15,7 +15,7 @@ from pprint import pprint
 
 class Postcode:
 
-    def __init__(self, postcode):   # Instantiation - takes postcode as a string argument
+    def __init__(self, postcode, cur):   # Instantiation - takes postcode as a string argument
         self.postcode = postcode    # store the raw postcode
         self.area = ''              # Initialise area to null string
         self.district = ''          # Initialise district to null string
@@ -25,6 +25,9 @@ class Postcode:
         self.level = 0              # Initialise the level to 0 (invalid)
         self.amended = 0            # Initialise amended 
         self.error = 0              # Initialise error code
+        self.centroid = (0,0)       # Inititalise centroid to origin
+        self.current = -1           # Initialise current flag
+        self.replace = ''           # Initialise replacement 
         if len(postcode) == 0:      # Null string
             self.error = 1          # Set error flag to 1 (missing postcode)
             return                  # Do nothing
@@ -102,7 +105,20 @@ class Postcode:
                     self.level = 4  # Set the level to 4 (sub-walk)  
                 else:               # Assume full postcode
                     self.walk = components[4]   # Store as walk
-                    self.level = 5  # Set the level to 5 (fuil postcode)  
+                    self.level = 5  # Set the level to 5 (full postcode)
+        query = "SELECT `EA`, `NO`, `current` FROM `ONSPD` WHERE `pcds` = '"+self.getPostcode("S")+"';"
+        cur.execute(query)
+        data = cur.fetchall()
+        if len(data) == 1:
+            self.centroid = (data[0][0], data[0][1])
+            self.current = data[0][2]
+            if self.current == 0:
+                query = "SELECT `curr_pcds` FROM `ONSPD_Changes` WHERE `term_pcds` = '"+self.getPostcode("S")+"'"
+                data = cur.fetchall()
+                if len(data) == 1:
+                    print self.getPostcode("S")
+                    self.replacement = data[0][0]
+                    print self.replacement
 
     def getPostcode(self, format):  # Output a formatted postcode
         if self.level < 4:          # If incomplete
