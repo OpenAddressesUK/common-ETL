@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Oct 29, 2014 at 04:25 PM
+-- Generation Time: Nov 05, 2014 at 09:49 AM
 -- Server version: 5.5.40-MariaDB-1~wheezy
 -- PHP Version: 5.4.4-14+deb7u14
 
@@ -29,11 +29,11 @@ SET time_zone = "+00:00";
 CREATE TABLE IF NOT EXISTS `Files` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `fileurl` varchar(1024) COLLATE utf8_unicode_ci NOT NULL,
-  `size` varchar(80) COLLATE utf8_unicode_ci NOT NULL,
-  `modtime` varchar(138) COLLATE utf8_unicode_ci NOT NULL,
+  `size` bigint(20) NOT NULL,
+  `modtime` datetime NOT NULL,
   `lastdownload` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=11 ;
 
 -- --------------------------------------------------------
 
@@ -96,6 +96,7 @@ CREATE TABLE IF NOT EXISTS `OS_Locator` (
   `Tile_10k` varchar(6) COLLATE utf8_unicode_ci NOT NULL,
   `Tile_25k` varchar(4) COLLATE utf8_unicode_ci NOT NULL,
   `Source` varchar(60) COLLATE utf8_unicode_ci NOT NULL,
+  `MBR25` geometry NOT NULL,
   PRIMARY KEY (`ID`),
   KEY `Name` (`Name`),
   KEY `Centx` (`Centx`),
@@ -104,8 +105,23 @@ CREATE TABLE IF NOT EXISTS `OS_Locator` (
   KEY `Maxx` (`Maxx`),
   KEY `Miny` (`Miny`),
   KEY `Maxy` (`Maxy`),
-  KEY `Locality` (`Locality`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=867836 ;
+  KEY `Locality` (`Locality`),
+  SPATIAL KEY `MBR50` (`MBR25`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=867836 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `Posttowns`
+--
+
+CREATE TABLE IF NOT EXISTS `Posttowns` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `pcarea` varchar(2) COLLATE utf8_unicode_ci NOT NULL,
+  `town` varchar(60) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `pcarea` (`pcarea`,`town`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1502 ;
 
 -- --------------------------------------------------------
 
