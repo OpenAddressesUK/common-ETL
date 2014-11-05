@@ -30,7 +30,7 @@ cur = dbConn.cursor()
 query = "TRUNCATE TABLE  `OS_Locator`;"
 cur.execute(query)
 
-fields = ["Name", "Classification", "Centx", "Centy", "Minx", "Maxx", "Miny", "Maxy", "Settlement", "Locality", "Cou_Unit", "Local Authority", "Tile_10k", "Tile_25k", "Source"]
+fields = ["Name", "Classification", "Centx", "Centy", "Minx", "Maxx", "Miny", "Maxy", "Settlement", "Locality", "Cou_Unit", "Local Authority", "Tile_10k", "Tile_25k", "Source", "MBR25"]
 
 # basequery = "INSERT INTO OS_Locator(`Name`, `Classification`, `Centx`, `Centy`, `Minx`, `Maxx`, `Miny`, `Maxy`, `Settlement`, `Locality`, `Cou_Unit`, `Local Authority`, `Tile_10k`, `Tile_25k`, `Source`) "
 
@@ -49,6 +49,13 @@ for file in glob.glob("OS*.txt"):
         # print row
         if (nrecs % 10000) == 0:
             print "Records read: " + str(nrecs)
+        minx = int(row[4]) - 25
+        maxx = int(row[5]) + 25
+        miny = int(row[6]) - 25
+        maxy = int(row[7]) + 25
+        poly = "GeomFromText('Polygon(("+str(minx)+" "+str(miny)+","+str(minx)+" "+str(maxy)+","+str(maxx)+" "+str(maxy)+","+str(maxx)+" "+str(miny)+","+str(minx)+" "+str(miny)+"))')"
+        # print poly
+        row.append(poly)
         bi.addRow(row)
     
         # query = basequery + "VALUES(" + string.join(["'" + field.replace("'","\\'") + "'" for field in row],",") + ");"
