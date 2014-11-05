@@ -86,7 +86,6 @@ parser = TownExtractor()
 parser.feed(html)
 
 for t in parser.towns:
-    print t
     bi.addRow(t)
 
 bi.close()
