@@ -16,6 +16,8 @@ import urllib
 import urllib2
 import zipfile
 import MySQLdb
+import fnmatch
+import time
 
 class LinkExtractor(HTMLParser):
 
@@ -23,8 +25,8 @@ class LinkExtractor(HTMLParser):
         HTMLParser.reset(self)
         self.links      = []
         
-    def setPattern(self,url,start,type):
-        self.start = start
+    def setPattern(self,url,mask,type):
+        self.mask = mask
         self.type = type
         if "/" in url:
             self.base = url[0:url.rfind("/")] + "/"
@@ -34,41 +36,63 @@ class LinkExtractor(HTMLParser):
     def handle_starttag(self, tag, attrs):
         if tag == "a":
             attrs = dict(attrs)   # store attributes in object
-            # print attrs
         if tag == "a" and "href" in attrs:
             href = attrs["href"]
-            if href.lower().endswith("."+self.type) and (href.lower().startswith(self.start) or ("/"+self.start) in href.lower()):
+            if "/" in href:
+                file = href[href.rfind("/")+1:].lower()
+            else:
+                file = href.lower()
+#            if href.lower().endswith("."+self.type) and (href.lower().maskswith(self.mask) or ("/"+self.mask) in href.lower()):
+            if file.endswith("."+self.type) and fnmatch.fnmatch(file,self.mask):
                 if not href.lower().startswith("http://") and not href.lower().startswith("https://"):
                     href = self.base + href
                 self.links.append(href)
                 
-def collectData(cur,url,filestart,filetype):
+def collectData(cur,url,filemask,filetype,fileget):
 
-    response = urllib2.urlopen(url)
+    opener = urllib2.build_opener()
+    opener.addheaders = [('User-agent', 'Mozilla/5.0')]
+
+    response = opener.open(url)
     html = response.read()
 
     parser = LinkExtractor()
-    parser.setPattern(url,filestart,filetype)
+    parser.setPattern(url,filemask,filetype)
     parser.feed(html)
     
-    for l in parser.links:
-        file = l[l.rfind("/")+1:]
+    links = parser.links
+    
+    files = []
+    latest = 0
+    
+    for l in links:
         response = urllib2.urlopen(l)
         meta = response.info()
-        query = "SELECT * FROM `Files` WHERE `fileurl`='"+l+"' AND `size`='"+meta['Content-Length']+"' AND `modtime`='"+meta['Last-Modified']+"';"
+#       modtime = time.strftime('%Y-%m-%d %H:%M:%S',time.strptime(meta['Last-Modified'],"%a, %d %b %Y %H:%M:%S %Z")) 
+        modtime = time.strptime(meta['Last-Modified'],"%a, %d %b %Y %H:%M:%S %Z")
+        files.append([l,meta['Content-Length'],modtime])
+        if modtime > latest:
+            latest = modtime
+    
+    for f in files:
+        file = f[0][f[0].rfind("/")+1:]
+        query = "SELECT * FROM `Files` WHERE `fileurl`='"+f[0]+"' AND `size`='"+f[1]+"' AND `modtime`='"+time.strftime('%Y-%m-%d %H:%M:%S',f[2])+"';"
         cur.execute(query)
         if cur.rowcount == 0:
-            print "Downloading: "+l
-            print urllib.urlretrieve(l, file)
-            query = "INSERT INTO `Files`(`fileurl`, `size`, `modtime`) VALUES ('"+l+"','"+meta['Content-Length']+"','"+meta['Last-Modified']+"')"
-            cur.execute(query)
-            dbConn.commit()
-            if filetype.lower() == 'zip':
-                print "Unzipping: "+file
-                with zipfile.ZipFile(file, "r") as z:
-                    z.extractall()
+            if fileget == 'all' or (fileget == 'latest' and f[2] >= latest):
+                print "Downloading: "+f[0]
+                print urllib.urlretrieve(f[0], file)
+                query = "INSERT INTO `Files`(`fileurl`, `size`, `modtime`) VALUES ('"+f[0]+"','"+f[1]+"','"+time.strftime('%Y-%m-%d %H:%M:%S',f[2])+"')"
+                cur.execute(query)
+                dbConn.commit()
+                if filetype.lower() == 'zip':
+                    print "Unzipping: "+file
+                    with zipfile.ZipFile(file, "r") as z:
+                        z.extractall()
+            else:
+                print "Not latest: "+f[0]
         else:
-            print "Unchanged: "+l
+            print "Unchanged: "+f[0]
     
 config = ConfigParser.ConfigParser()
 
@@ -85,8 +109,12 @@ sources = config.get('sources', 'sources').split(",")
 
 for s in sources:
     url = config.get(s, 'url')
-    filestart = config.get(s, 'filestart')
+    filemask = config.get(s, 'filemask')
     filetype = config.get(s, 'filetype')
-    collectData(cur,url,filestart,filetype)
+    if config.has_option(s, 'get'):
+        fileget = config.get(s, 'get')
+    else:
+        fileget = "all"
+    collectData(cur,url,filemask,filetype,fileget)
     
 dbConn.close()
