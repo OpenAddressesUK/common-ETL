@@ -12,12 +12,12 @@ url=http://shrouded-caverns-1022.herokuapp.com/address
 token=fe6d43aedebea9fb1597eac31d94406e
 # Sources - create one subsection per source
 [sources]
-sources=companies_house,land_registry
+sources=companies_house
 [companies_house]
 url=http://download.companieshouse.gov.uk/en_output.html
-filestart=basic
+filemask=basic*
 filetype=zip
-[land_registry]
-url=https://www.gov.uk/government/statistical-data-sets/price-paid-data-downloads
-filestart=pp-monthly
-filetype=csv
+[onspd]
+url=https://geoportal.statistics.gov.uk/geoportal/catalog/content/filelist.page
+filemask=ONSPD*_csv*
+filetype=zip
