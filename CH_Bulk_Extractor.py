@@ -22,6 +22,7 @@ import time
 import urllib
 import urllib2
 import MySQLdb
+import collections
 
 # Error timeout parameters
 max_tries = 4                           # Maximum number of retries
@@ -85,9 +86,13 @@ for file in glob.glob("Basic*.csv"):
                             #    sys.exit("Sector failure")
                             a.getStreet()
                             a.getAons()
-                            address = {}
+                            address = collections.OrderedDict()
                             address['address'] = a.elements
-                            address['address']['postcode'] = pc.getPostcode("S")
+                            address['address']['postcode'] = collections.OrderedDict()
+                            address['address']['postcode']['name'] = pc.getPostcode("S")
+                            address['address']['postcode']['geometry'] = collections.OrderedDict()
+                            address['address']['postcode']['geometry']['type'] = 'Point'
+                            address['address']['postcode']['geometry']['coordinates'] = [pc.centroid[1], pc.centroid[0]]
                             # Next line for future use for inference
                             # out['address']['sector'] = pc.getSector("S")
                             address['provenance'] = {}
