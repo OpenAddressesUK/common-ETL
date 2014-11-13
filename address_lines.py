@@ -88,8 +88,9 @@ class AddressLines:
                                         matchwords = m
                                         town = k
                                         self.townpos = [i-1, j]
-                        if town > -1:                            
-                            self.elements['town'] = self.towns[self.pcarea][keys[0]][town][0]
+                        if town > -1:  
+                            self.elements['town'] = collections.OrderedDict()
+                            self.elements['town']['name'] = self.towns[self.pcarea][keys[0]][town][0]
                             if j == 0:
                                 self.address[i-1] = ''
                             else:
@@ -151,7 +152,8 @@ class AddressLines:
                     self.address[streetlines[max-1]] = self.address[streetlines[max-1]].replace(streets[max-1],"").strip()
                     if streetlines[max-1] < (len(self.address) - 1):
                         if self.address[streetlines[max-1]+1] != '' and not any(char.isdigit() for char in self.address[streetlines[max-1]+1]):
-                            self.elements['locality'] = self.address[streetlines[max-1]+1]
+                            self.elements['locality'] = collections.OrderedDict()
+                            self.elements['locality']['name'] = self.address[streetlines[max-1]+1]
                             self.address[streetlines[max-1]+1] = ''
                 else:
                     self.elements['street'] = collections.OrderedDict()
@@ -163,7 +165,8 @@ class AddressLines:
                     self.address[streetlines[max-2]] = self.address[streetlines[max-2]].replace(streets[max-2],"").strip()
                     if streetlines[max-1] < (len(self.address) - 1):
                         if self.address[streetlines[max-1]+1] != '' and not any(char.isdigit() for char in self.address[streetlines[max-1]+1]):
-                            self.elements['locality'] = self.address[streetlines[max-1]+1]
+                            self.elements['locality'] = collections.OrderedDict()
+                            self.elements['locality']['name'] = self.address[streetlines[max-1]+1]
                             self.address[streetlines[max-1]+1] = ''
             # print self.address
             # print self.elements
@@ -184,12 +187,16 @@ class AddressLines:
         if self.aons == []:
             self.aons.append([0,0,0,"",self.address[0],""])
         if len(self.aons) == 1:
-            self.elements['paon'] = (self.aons[0][3]+" "+self.aons[0][4]).strip()
+            self.elements['paon'] = collections.OrderedDict()
+            self.elements['paon']['name'] = (self.aons[0][3]+" "+self.aons[0][4]).strip()
             pos = self.aons[0][0] + 1
             if self.aons[0][0] > 0:
-                self.elements['saon'] = self.address[0]
+                self.elements['saon'] = collections.OrderedDict()
+                self.elements['saon']['name'] = self.address[0]
         elif len(self.aons) >= 2:
-            self.elements['paon'] = (self.aons[1][3]+" "+self.aons[1][4]).strip()
+            self.elements['paon'] = collections.OrderedDict()
+            self.elements['paon']['name'] = (self.aons[1][3]+" "+self.aons[1][4]).strip()
             pos = self.aons[0][0] + 1
-            self.elements['saon'] = self.address[0].strip()
+            self.elements['saon'] = collections.OrderedDict()
+            self.elements['saon']['name'] = self.address[0].strip()
         return self.aons
