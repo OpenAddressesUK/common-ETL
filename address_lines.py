@@ -102,27 +102,29 @@ class AddressLines:
         
     def getStreet(self):
         if self.pcpoint[0] > 0:
-            # minx = str(self.pcpoint[0]-1000)
-            # maxx = str(self.pcpoint[0]+1000)
-            # miny = str(self.pcpoint[1]-1000)
-            # maxy = str(self.pcpoint[1]+1000)
-            # query = "SELECT `Name` FROM `OS_Locator` WHERE `Name` > '' AND `Centx` BETWEEN "+minx+" AND "+maxx+" AND `Centy` BETWEEN "+miny+" AND "+maxy+";"
-            query = "SELECT `Name` FROM `OS_Locator` WHERE `Name` > '' AND CONTAINS(`MBR25` ,POINT( "+str(self.pcpoint[0])+", "+str(self.pcpoint[1])+"));"
+            query = "SELECT `Name`, `Centx`, `Centy` FROM `OS_Locator` WHERE `Name` > '' AND CONTAINS(`MBR25` ,POINT( "+str(self.pcpoint[0])+", "+str(self.pcpoint[1])+"));"
             self.cur.execute(query)
             max = len(self.address)
             streets = []
             streetlines = []
+            centroids = []
             for street in self.cur.fetchall():
                 for i in range(0,max):  # Look for number at start of word
                     if street[0] in self.address[i]:
                         if street[0] not in streets:
                             streets.append(street[0])
                             streetlines.append(i)
+                            centroids.append([street[1], street[2]])
             # print self.address   
             # print streets
+            # print centroids
             if len(streets) == 1:
                 self.address[streetlines[0]] = self.address[streetlines[0]].replace(streets[0],"").strip()
-                self.elements['street'] = streets[0]
+                self.elements['street'] = collections.OrderedDict()
+                self.elements['street']['name'] = streets[0]
+                self.elements['street']['geometry'] = collections.OrderedDict()
+                self.elements['street']['geometry']['type'] = 'Point'
+                self.elements['street']['geometry']['coordinates'] = [centroids[0][1], centroids[0][0]]
                 if streetlines[0] < (len(self.address) - 1):
                     if self.address[streetlines[0]+1] != '' and not any(char.isdigit() for char in self.address[streetlines[0]+1]):
                         self.elements['locality'] = self.address[streetlines[0]+1]
@@ -130,21 +132,33 @@ class AddressLines:
             elif len(streets) > 1:
                 max = len(streets)
                 if streets[max-1] in streets[max-2] and streetlines[max-1] == streetlines[max-2]:
-                    self.elements['street'] = streets[max-2]
+                    self.elements['street'] = collections.OrderedDict()
+                    self.elements['street']['name'] = streets[max-2]
+                    self.elements['street']['geometry'] = collections.OrderedDict()
+                    self.elements['street']['geometry']['type'] = 'Point'
+                    self.elements['street']['geometry']['coordinates'] = [centroids[max-2][1], centroids[max-2][0]]
                     self.address[streetlines[max-2]] = self.address[streetlines[max-2]].replace(streets[max-2],"").strip()
                     if streetlines[max-2] < (len(self.address) - 1):
                         if self.address[streetlines[max-2]+1] != '' and not any(char.isdigit() for char in self.address[streetlines[max-2]+1]):
                             self.elements['locality'] = self.address[streetlines[max-2]+1]
                             self.address[streetlines[max-2]+1] = ''
-                elif streets[max-2] in streets[max-1] and streetlines[max-2] == streetlines[max-1]:                    
-                    self.elements['street'] = streets[max-1]
+                elif streets[max-2] in streets[max-1] and streetlines[max-2] == streetlines[max-1]:
+                    self.elements['street'] = collections.OrderedDict()
+                    self.elements['street']['name'] = streets[max-1]
+                    self.elements['street']['geometry'] = collections.OrderedDict()
+                    self.elements['street']['geometry']['type'] = 'Point'
+                    self.elements['street']['geometry']['coordinates'] = [centroids[max-1][1], centroids[max-1][0]]
                     self.address[streetlines[max-1]] = self.address[streetlines[max-1]].replace(streets[max-1],"").strip()
                     if streetlines[max-1] < (len(self.address) - 1):
                         if self.address[streetlines[max-1]+1] != '' and not any(char.isdigit() for char in self.address[streetlines[max-1]+1]):
                             self.elements['locality'] = self.address[streetlines[max-1]+1]
                             self.address[streetlines[max-1]+1] = ''
                 else:
-                    self.elements['street'] = streets[max-1] + ", " + streets[max-2]
+                    self.elements['street'] = collections.OrderedDict()
+                    self.elements['street']['name'] = streets[max-1] + ", " + streets[max-2]
+                    self.elements['street']['geometry'] = collections.OrderedDict()
+                    self.elements['street']['geometry']['type'] = 'Point'
+                    self.elements['street']['geometry']['coordinates'] = [centroids[max-2][1], centroids[max-2][0]]
                     self.address[streetlines[max-1]] = self.address[streetlines[max-1]].replace(streets[max-1],"").strip()                    
                     self.address[streetlines[max-2]] = self.address[streetlines[max-2]].replace(streets[max-2],"").strip()
                     if streetlines[max-1] < (len(self.address) - 1):
