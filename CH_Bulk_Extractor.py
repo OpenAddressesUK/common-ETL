@@ -23,6 +23,11 @@ import urllib
 import urllib2
 import MySQLdb
 
+# Error timeout parameters
+max_tries = 4                           # Maximum number of retries
+wait_min = 1                            # First wait time (seconds)
+wait_increment = 2                      # Wait time increment (seconds)
+
 # Read api configuration from config file
 config = ConfigParser.ConfigParser()
 config.read("oa_alpha_etl.cnf")
@@ -99,13 +104,20 @@ for file in glob.glob("Basic*.csv"):
         headers = { 'ACCESS_TOKEN' : apitoken }
         url = apiurl
         req = urllib2.Request(url, data, headers)
-        try:
-            response = urllib2.urlopen(req)
-        except urllib2.HTTPError as e:
-           sys.exit("Aborted - Ingester API HTTP Error: " + str(e.code) + " - " + e.reason)
-        except URLError as e:
-           sys.exit("Aborted - Ingester API URL Error: " + str(e.code) + " - " + e.reason)
-        the_page = response.read()
+        ntries = 0
+        while ntries < max_tries:
+            try:
+                response = urllib2.urlopen(req)
+                the_page = response.read()
+            except urllib2.HTTPError as e:
+                time.sleep(wait_min + wait_increment * ntries)
+                ntries += 1
+                err = e
+                print "Warning - Ingester API HTTP Error encountered - retrying ("+str(ntries)+"): " + str(e.code) + " - " + e.reason
+            except URLError as e:
+               sys.exit("Fatal error - Ingester API URL Error: " + str(e.code) + " - " + e.reason)
+        if ntries >= max_tries:
+            sys.exit("Fatal error - Ingester API HTTP Error max tries reached ("+str(ntries)+"): " + str(err.code) + " - " + err.reason)
     elapsed = time.time() - start_time
     print str(elapsed) + " secs elapsed"
     print str((60 * nrecs) / elapsed) + " recs/min"
