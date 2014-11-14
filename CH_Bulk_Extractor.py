@@ -24,36 +24,37 @@ import urllib2
 import MySQLdb
 import collections
 
-# Error timeout parameters
-max_tries = 100                         # Maximum number of retries
-wait_min = 1                            # First wait time (seconds)
-wait_increment = 5                      # Wait time increment (seconds)
+# Store a list of addresses into the API
+def storeAddresses(out):
+    if len(out) > 0:                # Check there is data to write
+        data = json.dumps(out, indent=1)
+        print data
+        headers = { 'ACCESS_TOKEN' : apitoken }
+        url = apiurl
+        req = urllib2.Request(url, data, headers)
+        ntries = 0
+        while ntries < max_tries:
+            try:
+                response = urllib2.urlopen(req)
+                the_page = response.read()
+            except urllib2.HTTPError as e:
+                time.sleep(wait_min + wait_increment * ntries)
+                ntries += 1
+                err = e
+                print "Warning - Ingester API HTTP Error encountered - retrying ("+str(ntries)+"): " + str(e.code) + " - " + e.reason
+            except URLError as e:
+               sys.exit("Fatal error - Ingester API URL Error: " + str(e.code) + " - " + e.reason)
+        if ntries >= max_tries:
+            sys.exit("Fatal error - Ingester API HTTP Error max tries reached ("+str(ntries)+"): " + str(err.code) + " - " + err.reason)
 
-# Read api configuration from config file
-config = ConfigParser.ConfigParser()
-config.read("oa_alpha_etl.cnf")
-apiurl = config.get('api', 'url')
-apitoken = config.get('api', 'token')
 
-# Read database configuration from config file
-username = config.get('database', 'username')
-password = config.get('database', 'password')
-hostname = config.get('database', 'hostname')
-database = config.get('database', 'database')
-
-dbConn = MySQLdb.connect(host=hostname,user=username,passwd=password,db=database)
-cur = dbConn.cursor()
-
-a = AddressLines(cur)
-
-csvout = open('CompanyTowns.txt', 'wb')
-companywriter = csv.writer(csvout, delimiter=',',quotechar='"', quoting=csv.QUOTE_MINIMAL)
-companywriter.writerow(['Postcode', 'Town', 'Sector', 'Aons'])
-
-for file in glob.glob("Basic*.csv"):
+# Process a single file
+def process_file(file):
     start_time = time.time()
     print file
     nrecs = 0
+    
+    # Load CSV file
     csvfile = open(file, 'rb')
     companyreader = csv.DictReader(csvfile, delimiter=',', quotechar='"')
     companyreader.fieldnames = [field.strip() for field in companyreader.fieldnames]
@@ -62,6 +63,7 @@ for file in glob.glob("Basic*.csv"):
     for i in xrange(0, len(rows), 100):
         out = {}
         out['addresses'] = []
+
         for row in rows[i:i+100]:
             nrecs += 1
             if (nrecs % 50) == 0:
@@ -104,29 +106,43 @@ for file in glob.glob("Basic*.csv"):
                             # print json.dumps(out, indent=1)
                             # print lines
                             out['addresses'].append(address)
-        if len(out) > 0:                # Check there is data to write
-            data = json.dumps(out, indent=1)
-            headers = { 'ACCESS_TOKEN' : apitoken }
-            url = apiurl
-            req = urllib2.Request(url, data, headers)
-            ntries = 0
-            while ntries < max_tries:
-                try:
-                    response = urllib2.urlopen(req)
-                    the_page = response.read()
-                except urllib2.HTTPError as e:
-                    time.sleep(wait_min + wait_increment * ntries)
-                    ntries += 1
-                    err = e
-                    print "Warning - Ingester API HTTP Error encountered - retrying ("+str(ntries)+"): " + str(e.code) + " - " + e.reason
-                except URLError as e:
-                   sys.exit("Fatal error - Ingester API URL Error: " + str(e.code) + " - " + e.reason)
-            if ntries >= max_tries:
-                sys.exit("Fatal error - Ingester API HTTP Error max tries reached ("+str(ntries)+"): " + str(err.code) + " - " + err.reason)
+        storeAddresses(out)
+
     print "Records read: " + str(nrecs)
     elapsed = time.time() - start_time
     print str(elapsed) + " secs elapsed"
     print str((60 * nrecs) / elapsed) + " recs/min"
     csvfile.close()
 
+# Main script
+
+# Error timeout parameters
+max_tries = 100                         # Maximum number of retries
+wait_min = 1                            # First wait time (seconds)
+wait_increment = 5                      # Wait time increment (seconds)
+
+# Read api configuration from config file
+config = ConfigParser.ConfigParser()
+config.read("oa_alpha_etl.cnf")
+apiurl = config.get('api', 'url')
+apitoken = config.get('api', 'token')
+
+# Read database configuration from config file
+username = config.get('database', 'username')
+password = config.get('database', 'password')
+hostname = config.get('database', 'hostname')
+database = config.get('database', 'database')
+
+dbConn = MySQLdb.connect(host=hostname,user=username,passwd=password,db=database)
+cur = dbConn.cursor()
+
+a = AddressLines(cur)
+
+csvout = open('CompanyTowns.txt', 'wb')
+companywriter = csv.writer(csvout, delimiter=',',quotechar='"', quoting=csv.QUOTE_MINIMAL)
+companywriter.writerow(['Postcode', 'Town', 'Sector', 'Aons'])
+
+for file in glob.glob("Basic*.csv"):
+    process_file(file)
+    
 csvout.close()
