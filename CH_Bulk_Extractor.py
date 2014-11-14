@@ -25,9 +25,9 @@ import MySQLdb
 import collections
 
 # Error timeout parameters
-max_tries = 4                           # Maximum number of retries
+max_tries = 100                         # Maximum number of retries
 wait_min = 1                            # First wait time (seconds)
-wait_increment = 2                      # Wait time increment (seconds)
+wait_increment = 5                      # Wait time increment (seconds)
 
 # Read api configuration from config file
 config = ConfigParser.ConfigParser()
