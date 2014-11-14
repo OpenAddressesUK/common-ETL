@@ -104,25 +104,26 @@ for file in glob.glob("Basic*.csv"):
                             # print json.dumps(out, indent=1)
                             # print lines
                             out['addresses'].append(address)
-        post = {}
-        data = json.dumps(out, indent=1)
-        headers = { 'ACCESS_TOKEN' : apitoken }
-        url = apiurl
-        req = urllib2.Request(url, data, headers)
-        ntries = 0
-        while ntries < max_tries:
-            try:
-                response = urllib2.urlopen(req)
-                the_page = response.read()
-            except urllib2.HTTPError as e:
-                time.sleep(wait_min + wait_increment * ntries)
-                ntries += 1
-                err = e
-                print "Warning - Ingester API HTTP Error encountered - retrying ("+str(ntries)+"): " + str(e.code) + " - " + e.reason
-            except URLError as e:
-               sys.exit("Fatal error - Ingester API URL Error: " + str(e.code) + " - " + e.reason)
-        if ntries >= max_tries:
-            sys.exit("Fatal error - Ingester API HTTP Error max tries reached ("+str(ntries)+"): " + str(err.code) + " - " + err.reason)
+        if len(out) > 0:                # Check there is data to write
+            data = json.dumps(out, indent=1)
+            headers = { 'ACCESS_TOKEN' : apitoken }
+            url = apiurl
+            req = urllib2.Request(url, data, headers)
+            ntries = 0
+            while ntries < max_tries:
+                try:
+                    response = urllib2.urlopen(req)
+                    the_page = response.read()
+                except urllib2.HTTPError as e:
+                    time.sleep(wait_min + wait_increment * ntries)
+                    ntries += 1
+                    err = e
+                    print "Warning - Ingester API HTTP Error encountered - retrying ("+str(ntries)+"): " + str(e.code) + " - " + e.reason
+                except URLError as e:
+                   sys.exit("Fatal error - Ingester API URL Error: " + str(e.code) + " - " + e.reason)
+            if ntries >= max_tries:
+                sys.exit("Fatal error - Ingester API HTTP Error max tries reached ("+str(ntries)+"): " + str(err.code) + " - " + err.reason)
+    print "Records read: " + str(nrecs)
     elapsed = time.time() - start_time
     print str(elapsed) + " secs elapsed"
     print str((60 * nrecs) / elapsed) + " recs/min"
