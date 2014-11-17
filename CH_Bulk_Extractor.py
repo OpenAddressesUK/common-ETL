@@ -36,6 +36,7 @@ def storeAddresses(out):
             try:
                 response = urllib2.urlopen(req)
                 the_page = response.read()
+                sleep(10)
                 break
             except urllib2.HTTPError as e:
                 time.sleep(wait_min + wait_increment * ntries)
@@ -60,7 +61,7 @@ def process_file(file):
 
     out = {}                            # Reset output buffer
     out['addresses'] = []
-    
+
     for row in companyreader:
         nrecs += 1
         if 'RegAddress.PostCode' in row:
@@ -97,14 +98,14 @@ def process_file(file):
                         # print json.dumps(out, indent=1)
                         # print lines
                         out['addresses'].append(address)
-                        
+
         if (nrecs % 100) == 0:          # Buffer full - send records to API
             print "Records read: " + str(nrecs)
             elapsed = time.time() - start_time
             print str(elapsed) + " secs elapsed"
             print str((60 * nrecs) / elapsed) + " recs/min"
             storeAddresses(out)         # Write records in buffer to API
-            out = {}                    # Reset output               
+            out = {}                    # Reset output
             out['addresses'] = []
 
     print "Records read: " + str(nrecs)
