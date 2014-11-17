@@ -128,7 +128,8 @@ class AddressLines:
                 self.elements['street']['geometry']['coordinates'] = [centroids[0][1], centroids[0][0]]
                 if streetlines[0] < (len(self.address) - 1):
                     if self.address[streetlines[0]+1] != '' and not any(char.isdigit() for char in self.address[streetlines[0]+1]):
-                        self.elements['locality'] = self.address[streetlines[0]+1]
+                        self.elements['locality'] = collections.OrderedDict()
+                        self.elements['locality']['name'] = self.address[streetlines[0]+1]
                         self.address[streetlines[0]+1] = ''
             elif len(streets) > 1:
                 max = len(streets)
@@ -141,7 +142,8 @@ class AddressLines:
                     self.address[streetlines[max-2]] = self.address[streetlines[max-2]].replace(streets[max-2],"").strip()
                     if streetlines[max-2] < (len(self.address) - 1):
                         if self.address[streetlines[max-2]+1] != '' and not any(char.isdigit() for char in self.address[streetlines[max-2]+1]):
-                            self.elements['locality'] = self.address[streetlines[max-2]+1]
+                            self.elements['locality'] = collections.OrderedDict()
+                            self.elements['locality']['name'] = self.address[streetlines[max-2]+1]
                             self.address[streetlines[max-2]+1] = ''
                 elif streets[max-2] in streets[max-1] and streetlines[max-2] == streetlines[max-1]:
                     self.elements['street'] = collections.OrderedDict()
