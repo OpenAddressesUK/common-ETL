@@ -36,14 +36,14 @@ def storeAddresses(out):
             try:
                 response = urllib2.urlopen(req)
                 the_page = response.read()
-                sleep(10)
+                time.sleep(10)
                 break
             except urllib2.HTTPError as e:
                 time.sleep(wait_min + wait_increment * ntries)
                 ntries += 1
                 err = e
                 print "Warning - Ingester API HTTP Error encountered - retrying ("+str(ntries)+"): " + str(e.code) + " - " + e.reason
-            except URLError as e:
+            except urllib2.URLError as e:
                sys.exit("Fatal error - Ingester API URL Error: " + str(e.code) + " - " + e.reason)
         if ntries >= max_tries:
             sys.exit ("Fatal error - Ingester API HTTP Error max tries reached ("+str(ntries)+")")
