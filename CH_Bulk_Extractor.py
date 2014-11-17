@@ -36,6 +36,7 @@ def storeAddresses(out):
             try:
                 response = urllib2.urlopen(req)
                 the_page = response.read()
+                time.sleep(30)
             except urllib2.HTTPError as e:
                 time.sleep(wait_min + wait_increment * ntries)
                 ntries += 1
@@ -52,7 +53,7 @@ def process_file(file):
     start_time = time.time()
     print file
     nrecs = 0
-    
+
     # Load CSV file
     csvfile = open(file, 'rb')
     companyreader = csv.DictReader(csvfile, delimiter=',', quotechar='"')
@@ -148,5 +149,5 @@ companywriter.writerow(['Postcode', 'Town', 'Sector', 'Aons'])
 
 for file in glob.glob("Basic*.csv"):
     process_file(file)
-    
+
 csvout.close()
