@@ -26,7 +26,7 @@ import collections
 
 # Store a list of addresses into the API
 def storeAddresses(out):
-    if len(out) > 0:                # Check there is data to write
+    if len(out['addresses']) > 0:                # Check there is data to write
         data = json.dumps(out, indent=1)
         headers = { 'ACCESS_TOKEN' : apitoken }
         url = apiurl
