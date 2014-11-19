@@ -28,7 +28,7 @@ import collections
 def storeAddresses(out):
     if len(out['addresses']) > 0:                # Check there is data to write
         data = json.dumps(out, indent=1)
-        headers = { 'ACCESS_TOKEN' : apitoken }
+        headers = { 'ACCESS_TOKEN' : apitoken, 'Content-Type': 'application/json' }
         url = apiurl
         req = urllib2.Request(url, data, headers)
         ntries = 0
