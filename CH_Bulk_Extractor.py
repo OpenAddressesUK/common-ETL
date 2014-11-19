@@ -36,7 +36,7 @@ def storeAddresses(out):
             try:
                 response = urllib2.urlopen(req)
                 the_page = response.read()
-                time.sleep(10)
+                time.sleep(2)
                 break
             except urllib2.HTTPError as e:
                 time.sleep(wait_min + wait_increment * ntries)
